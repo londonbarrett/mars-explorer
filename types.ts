@@ -41,3 +41,10 @@ export type Photo = {
   earth_date: string;
   rover: Rover;
 };
+
+export type SearchParams = {
+  camera: string;
+  date?: string;
+  page?: number;
+  rover: string;
+};

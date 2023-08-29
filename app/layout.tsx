@@ -1,6 +1,7 @@
-import "./globals.css";
+import cx from "classnames";
 import type { Metadata } from "next";
 import { Share_Tech_Mono } from "next/font/google";
+import "./globals.css";
 import Providers from "../components/providers";
 
 const shareTechMono = Share_Tech_Mono({ subsets: ["latin"], weight: "400" });
@@ -17,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={shareTechMono.className}>
+      <body className={cx(shareTechMono.className)}>
         <Providers>{children}</Providers>
       </body>
     </html>

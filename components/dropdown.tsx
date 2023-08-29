@@ -7,40 +7,51 @@ import {
   Selection,
 } from "@nextui-org/react";
 import cx from "classnames";
-import React, { ReactNode, memo } from "react";
+import React, { ReactNode, memo, useCallback } from "react";
 
 type Props = {
   icon: ReactNode;
   label: string;
-  onChange: (keys: Selection) => void;
-  options: { value: string; label: string }[];
-  value: Selection;
+  onChange: (values: string[]) => void;
+  options?: Record<string, string>;
+  values?: string[];
 };
 
-function Dropdown({ icon, label, onChange, options, value }: Props) {
+function Dropdown({ icon, label, onChange, options, values }: Props) {
+  const selectionChangeHandler = useCallback(
+    (keys: Selection) => onChange(Array.from(keys as Set<string>)),
+    [onChange]
+  );
+  const selectedValue =
+    !!values && options ? values?.map((value) => options[value]) : label;
   return (
     <NUIDropdown>
       <DropdownTrigger>
         <Button
+          aria-label={label}
           className={cx("capitalize", "border-white")}
           endContent={icon}
           size="sm"
           variant="bordered"
         >
-          {label}
+          {selectedValue}
         </Button>
       </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Dropdown Variants"
-        onSelectionChange={onChange}
-        selectedKeys={value}
-        selectionMode="single"
-        variant="bordered"
-      >
-        {options.map((option) => (
-          <DropdownItem key={option.value}>{option.label}</DropdownItem>
-        ))}
-      </DropdownMenu>
+      {options && (
+        <DropdownMenu
+          aria-label={`${label} options`}
+          onSelectionChange={selectionChangeHandler}
+          selectedKeys={new Set(values)}
+          selectionMode="single"
+          variant="bordered"
+        >
+          {Object.keys(options).map((option) => (
+            <DropdownItem aria-label={options[option]} key={option}>
+              {options[option]}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      )}
     </NUIDropdown>
   );
 }
