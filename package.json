@@ -11,12 +11,15 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@nextui-org/react": "^2.0.5",
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
+    "classnames": "^2.3.2",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
+    "framer-motion": "^10.15.1",
     "next": "13.4.13",
     "postcss": "8.4.27",
     "react": "18.2.0",

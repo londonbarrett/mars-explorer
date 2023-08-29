@@ -1,4 +1,4 @@
-enum Cameras {
+export enum Cameras {
   FHAZ,
   NAVCAM,
   MAST,
@@ -8,7 +8,7 @@ enum Cameras {
   RHAZ,
 }
 
-type Rover = {
+export type Rover = {
   id: 5;
   name: string;
   landing_date: string;
@@ -20,11 +20,17 @@ type Rover = {
   cameras: [{ name: string; full_name: string }];
 };
 
-type Camera = {
+export type Camera = {
   id: number;
   name: string;
   rover_id: number;
   full_name: string;
+};
+
+export type IconProps = {
+  className?: string;
+  fill?: string;
+  height?: number | string;
 };
 
 export type Photo = {
