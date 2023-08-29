@@ -27,6 +27,8 @@ describe("Main App Page", () => {
         <Providers>{children}</Providers>
       ),
     });
+  // jest.spyOn(localStorage, "setItem");
+  // localStorage.setItem = jest.fn();
   it("Renders successfully", async () => {
     const { getAllByAltText } = await renderPage({});
     const images = getAllByAltText(/2023-08-06/, { exact: false });
@@ -47,5 +49,25 @@ describe("Main App Page", () => {
     expect(routerMock.asPath).toBe(
       "/?rover=opportunity&camera=navcam&date=2023-01-09"
     );
+  });
+  it("Adds and removes a favorite", async () => {
+    const { getByLabelText } = await renderPage({});
+    const roverFilter = getByLabelText(/select a rover/i);
+    await user.click(roverFilter);
+    const opportunityOption = getByLabelText(/opportunity/i);
+    await user.click(opportunityOption);
+    const cameraFilter = getByLabelText(/select a camera/i);
+    await user.click(cameraFilter);
+    const navigationCameraOption = getByLabelText(/navigation camera/i);
+    await user.click(navigationCameraOption);
+    const date = getByLabelText(/select a date/i) as HTMLInputElement;
+    fireEvent.change(date, { target: { value: "2023-01-09" } });
+    const addFav = getByLabelText(/add to favorites/i);
+    await user.click(addFav);
+    expect(localStorage.getItem("favorites")).toBe(
+      '["rover=opportunity&camera=navcam&date=2023-01-09"]'
+    );
+    await user.click(addFav);
+    expect(localStorage.getItem("favorites")).toBe("[]");
   });
 });

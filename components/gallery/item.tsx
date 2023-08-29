@@ -28,7 +28,6 @@ const randomizePhoto = (...args: string[]) =>
 
 function Item({ data }: Props) {
   const [hover, setHover] = useState(false);
-
   const timerCount = useRef(0);
   const [effectStrings, setEffectStrings] = useState([
     data.rover.name,
@@ -36,7 +35,7 @@ function Item({ data }: Props) {
     data.earth_date,
   ]);
   const changeText = useCallback(() => {
-    if (timerCount.current > 10) {
+    if (timerCount.current > 5) {
       setHover(false);
     } else {
       timerCount.current = timerCount.current + 1;
@@ -59,6 +58,7 @@ function Item({ data }: Props) {
   return (
     <div
       className={cx(
+        "flex",
         "divide-white",
         "divide-y",
         "relative",
@@ -67,13 +67,13 @@ function Item({ data }: Props) {
       )}
       onMouseEnter={mouseEnterHandler}
       onMouseLeave={mouseLeaveHandler}
+      style={{ height: "30vh" }}
     >
       <Image
         alt={`${data.rover.name} ${data.camera.name} ${data.earth_date}`}
-        className={cx("w-full")}
-        height={500}
+        className="object-fit"
+        fill
         src={data.img_src}
-        width={500}
       />
       <div
         className={cx(

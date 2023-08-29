@@ -1,13 +1,21 @@
 "use client";
 
-import React, { ChangeEvent, memo, useCallback, useState } from "react";
+import React, {
+  ChangeEvent,
+  memo,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import {
   Button,
   Input,
   Navbar,
-  NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@nextui-org/react";
 import Dropdown from "./dropdown";
 import Chevron from "./icons/chevron";
@@ -49,10 +57,28 @@ const camerasOptions = {
   },
 };
 
+const getFavoriteInfo = (search: string) => {
+  const sp = new URLSearchParams(search);
+  return `${sp.get("rover")} - ${sp.get("camera")} - ${sp.get("date")}`;
+};
+
+const getFavorites = () => {
+  try {
+    return localStorage && localStorage.getItem("favorites")
+      ? JSON.parse(localStorage.getItem("favorites") as string)
+      : [];
+  } catch {
+    return [];
+  }
+};
+
 function Navigation() {
   const searchParams = useSearchParams();
+  const [favorites, setFavorites] = useState<string[]>(getFavorites());
+  const [favorite, setFavorite] = useState<boolean>(
+    favorites.includes(searchParams.toString())
+  );
   const { push } = useRouter();
-  const [favorite, setFavorite] = useState(false);
   const pushSearchParams = useCallback(
     (param: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -78,13 +104,21 @@ function Navigation() {
       pushSearchParams("date", event.target.value),
     [pushSearchParams]
   );
-  const favoriteClickHandler = useCallback(
-    () => setFavorite((prev) => !prev),
-    []
-  );
+  const favoriteClickHandler = useCallback(() => {
+    const newFavorites = favorite
+      ? favorites.filter(
+          (favorite: string) => favorite !== searchParams.toString()
+        )
+      : Array.from(new Set([...favorites, searchParams.toString()]));
+
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+    setFavorites(newFavorites);
+    setFavorite((prev) => !prev);
+  }, [favorite, favorites, searchParams]);
   const selectedRover = searchParams.get("rover");
   const selectedCamera = searchParams.get("camera");
   const selectedDate = searchParams.get("date");
+  const favoriteVisible = selectedRover && selectedCamera && selectedDate;
   const roverValues = Object.keys(roverOptions).includes(selectedRover || "")
     ? [selectedRover as string]
     : undefined;
@@ -99,11 +133,12 @@ function Navigation() {
       classNames={{ base: "border-white border-1" }}
       maxWidth="full"
     >
-      <NavbarBrand>
+      <NavbarContent>
+        <NavbarMenuToggle />
         <Link href="/" className="font-bold text-inherit">
           Mars Explorer
         </Link>
-      </NavbarBrand>
+      </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
           <Dropdown
@@ -139,18 +174,29 @@ function Navigation() {
             variant="bordered"
           />
         </NavbarItem>
-        <NavbarItem>
-          <Button
-            aria-label="Add to favorites"
-            isIconOnly
-            onClick={favoriteClickHandler}
-            size="sm"
-            variant="light"
-          >
-            <Heart fill="white" active={favorite} />
-          </Button>
-        </NavbarItem>
+        {favoriteVisible && (
+          <NavbarItem>
+            <Button
+              aria-label="Add to favorites"
+              isIconOnly
+              onClick={favoriteClickHandler}
+              size="sm"
+              variant="light"
+            >
+              <Heart fill="white" active={favorite} />
+            </Button>
+          </NavbarItem>
+        )}
       </NavbarContent>
+      <NavbarMenu>
+        {favorites.map((favorite) => (
+          <NavbarMenuItem key={`${favorite}`}>
+            <Link className="w-full" href={`/?${favorite}`}>
+              {getFavoriteInfo(favorite)}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }

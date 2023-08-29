@@ -13,13 +13,7 @@ function Gallery({ data }: Props) {
     <section>
       {data.length ? (
         <div
-          className={cx(
-            "border-l-1",
-            "columns-1",
-            "sm:columns-2",
-            "lg:columns-3",
-            "gap-0"
-          )}
+          className={cx("border-l-1", "grid", "grid-cols-3", "gap-0")}
           style={{
             minHeight: "calc(100vh - 66px)",
           }}
